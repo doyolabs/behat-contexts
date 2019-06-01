@@ -1,0 +1,14 @@
+parameters:
+    locale: en
+framework:
+    test: ~
+    secret: '$scr3t$'
+    translator:
+        default_path: '%kernel.project_dir%/translations'
+        fallbacks:
+            - '%locale%'
+services:
+    test.controller:
+        class: 'Test\Doyo\Behat\Fixtures\TestController'
+        tags: ['controller.service_arguments']
+        

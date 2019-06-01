@@ -1,0 +1,10 @@
+homepage:
+    path: /
+    defaults:
+        _controller: 'test.controller::index'
+
+foo:
+    path: /foo
+    defaults:
+        _controller: 'test.controller'
+        _action: 'index'

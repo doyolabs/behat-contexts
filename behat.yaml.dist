@@ -1,0 +1,35 @@
+default:
+    suites:
+        default:
+            contexts:
+                - FeatureContext
+                - Behat\MinkExtension\Context\MinkContext
+                - Doyo\Behat\Contexts\RestContext
+                - Doyo\Behat\Contexts\JsonContext
+    extensions:
+        Behatch\Extension: ~
+        Behat\Symfony2Extension:
+            kernel:
+                class: Test\Doyo\Behat\Fixtures\Kernel
+                debug: true
+        Behat\MinkExtension:
+            sessions:
+                default:
+                    symfony2: ~
+        Doyo\Behat\Extension:
+            translator: 'translator'
+        Doyo\Behat\CodeCoverage\Extension:
+            drivers:
+                - local
+            filter:
+                whitelist:
+                    include:
+                        directories:
+                            src: ~
+            report:
+                format: php
+                options:
+                    target: '%paths.base%/build/cov/behat.cov'
+                #format: php
+                #options:
+                #    target: '%paths.base%/build/cov/behat.cov'

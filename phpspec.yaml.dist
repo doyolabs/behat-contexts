@@ -1,0 +1,15 @@
+suites:
+    behat:
+        namespace: Doyo\Behat
+        psr4_prefix: Doyo\Behat
+
+extensions:
+    Test\Doyo\Behat\CodeCoverageExtension:
+        whitelist:
+            - src
+        format:
+            - php
+            - html
+        output:
+            php: build/cov/phpspec.cov
+            html: build/phpspec
