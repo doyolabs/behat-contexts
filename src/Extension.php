@@ -1,10 +1,19 @@
 <?php
 
+/*
+ * This file is part of the DoyoLabs Behat Common project.
+ *
+ * (c) Anthonius Munthi <me@itstoni.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+declare(strict_types=1);
 
 namespace Doyo\Behat;
 
 use Behat\Behat\Context\ServiceContainer\ContextExtension;
-use Behat\Testwork\EventDispatcher\ServiceContainer\EventDispatcherExtension;
 use Behat\Testwork\ServiceContainer\Extension as ExtensionInterface;
 use Behat\Testwork\ServiceContainer\ExtensionManager;
 use Doyo\Behat\Initializer\ExpressionAwareInitializer;
@@ -22,25 +31,24 @@ class Extension implements ExtensionInterface
 
     public function process(ContainerBuilder $container)
     {
-        if($container->has('symfony2_extension.kernel')){
+        if ($container->has('symfony2_extension.kernel')) {
             $this->loadSymfony($container);
         }
-        return;
     }
 
     private function loadSymfony(ContainerBuilder $container)
     {
-        /* @var \Symfony\Component\HttpKernel\KernelInterface $kernel */
-        $kernel = $container->get('symfony2_extension.kernel');
+        /** @var \Symfony\Component\HttpKernel\KernelInterface $kernel */
+        $kernel          = $container->get('symfony2_extension.kernel');
         $kernelContainer = $kernel->getContainer();
 
-        if($kernelContainer->has('translator')){
+        if ($kernelContainer->has('translator')) {
             $translator = $kernelContainer->get('translator');
-            $container->getDefinition('doyo.expression.provider')->addMethodCall('setTranslator',[$translator]);
+            $container->getDefinition('doyo.expression.provider')->addMethodCall('setTranslator', [$translator]);
         }
-        if($kernelContainer->has('router')){
+        if ($kernelContainer->has('router')) {
             $router = $kernelContainer->get('router');
-            $container->getDefinition('doyo.expression.provider')->addMethodCall('setRouter',[$router]);
+            $container->getDefinition('doyo.expression.provider')->addMethodCall('setRouter', [$router]);
         }
     }
 
@@ -55,8 +63,7 @@ class Extension implements ExtensionInterface
             ->addDefaultsIfNotSet()
             ->children()
                 ->scalarNode('translator')->defaultValue('translator')->end()
-            ->end()
-        ;
+            ->end();
     }
 
     public function load(ContainerBuilder $container, array $config)
@@ -71,16 +78,16 @@ class Extension implements ExtensionInterface
         $container->setDefinition('doyo.expression.provider', new Definition(ExpressionLanguageProvider::class));
 
         $expression = new Definition(ExpressionLanguage::class);
-        $expression->addMethodCall('registerProvider',[new Reference('doyo.expression.provider')]);
+        $expression->addMethodCall('registerProvider', [new Reference('doyo.expression.provider')]);
         $container->setDefinition('doyo.expression.language', $expression);
     }
 
     private function loadContextInitializer(ContainerBuilder $container)
     {
-        $definition = new Definition(ExpressionAwareInitializer::class, array(
+        $definition = new Definition(ExpressionAwareInitializer::class, [
             new Reference('doyo.expression.language'),
-        ));
-        $definition->addTag(ContextExtension::INITIALIZER_TAG, array('priority' => 0));
+        ]);
+        $definition->addTag(ContextExtension::INITIALIZER_TAG, ['priority' => 0]);
         $container->setDefinition('doyo.initializer.expression', $definition);
     }
 }

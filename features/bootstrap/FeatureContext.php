@@ -1,9 +1,20 @@
 <?php
 
+/*
+ * This file is part of the DoyoLabs Behat Common project.
+ *
+ * (c) Anthonius Munthi <me@itstoni.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+declare(strict_types=1);
+
 use Behat\Behat\Context\Context;
-use Webmozart\Assert\Assert;
 use Doyo\Behat\ExpressionAwareContextInterface;
 use Doyo\Behat\ExpressionLanguage;
+use Webmozart\Assert\Assert;
 
 /**
  * Defines application features from the specific context.
@@ -26,6 +37,7 @@ class FeatureContext implements Context, ExpressionAwareContextInterface
 
     /**
      * @Given I say :what
+     *
      * @param string $what
      */
     public function iSay($what)
@@ -35,6 +47,7 @@ class FeatureContext implements Context, ExpressionAwareContextInterface
 
     /**
      * @Given output should be :what
+     *
      * @param string $what
      */
     public function outputShouldBe($what)
@@ -44,18 +57,20 @@ class FeatureContext implements Context, ExpressionAwareContextInterface
 
     /**
      * @Given I have text:
+     *
      * @param \Behat\Gherkin\Node\PyStringNode $node
      */
-    public function iHaveText(\Behat\Gherkin\Node\PyStringNode $node)
+    public function iHaveText(Behat\Gherkin\Node\PyStringNode $node)
     {
         $this->output = $node->getRaw();
     }
 
     /**
      * @Then translated output should be:
+     *
      * @param \Behat\Gherkin\Node\PyStringNode $node
      */
-    public function translatedOutputShouldBe(\Behat\Gherkin\Node\PyStringNode $node)
+    public function translatedOutputShouldBe(Behat\Gherkin\Node\PyStringNode $node)
     {
         $translated = $this->expression->compile($this->output);
         Assert::same($translated, $node->getRaw());
@@ -63,6 +78,7 @@ class FeatureContext implements Context, ExpressionAwareContextInterface
 
     /**
      * @Given I have route :route
+     *
      * @param string $route
      */
     public function iHaveRoute($route)
@@ -72,6 +88,7 @@ class FeatureContext implements Context, ExpressionAwareContextInterface
 
     /**
      * @Then generated route should be :exprected
+     *
      * @param string $expected
      */
     public function translatedRouteShouldBe($expected)

@@ -4,7 +4,7 @@ suites:
         psr4_prefix: Doyo\Behat
 
 extensions:
-    Test\Doyo\Behat\CodeCoverageExtension:
+    Doyo\PhpSpec\CoverageExtension:
         whitelist:
             - src
         format:

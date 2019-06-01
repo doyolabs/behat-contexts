@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the DoyoLabs Behat Common project.
+ *
+ * (c) Anthonius Munthi <me@itstoni.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+declare(strict_types=1);
 
 namespace Test\Doyo\Behat;
 
@@ -8,14 +18,14 @@ use PhpSpec\Extension;
 use PhpSpec\ServiceContainer;
 use SebastianBergmann\CodeCoverage\CodeCoverage;
 use SebastianBergmann\CodeCoverage\Filter;
-use SebastianBergmann\CodeCoverage\Version;
 use SebastianBergmann\CodeCoverage\Report;
+use SebastianBergmann\CodeCoverage\Version;
 use Symfony\Component\Console\Input\InputOption;
 
 class CodeCoverageExtension implements Extension
 {
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function load(ServiceContainer $container, array $params = [])
     {
@@ -35,15 +45,15 @@ class CodeCoverageExtension implements Extension
             $options = !empty($params) ? $params : $container->getParam('code_coverage');
 
             if (!isset($options['format'])) {
-                $options['format'] = array('html');
-            } elseif (!is_array($options['format'])) {
+                $options['format'] = ['html'];
+            } elseif (!\is_array($options['format'])) {
                 $options['format'] = (array) $options['format'];
             }
 
             if (isset($options['output'])) {
-                if (!is_array($options['output']) && count($options['format']) === 1) {
+                if (!\is_array($options['output']) && 1 === \count($options['format'])) {
                     $format = $options['format'][0];
-                    $options['output'] = array($format => $options['output']);
+                    $options['output'] = [$format => $options['output']];
                 }
             }
 
@@ -63,7 +73,7 @@ class CodeCoverageExtension implements Extension
         $container->define('code_coverage.reports', function ($container) {
             $options = $container->get('code_coverage.options');
 
-            $reports = array();
+            $reports = [];
             foreach ($options['format'] as $format) {
                 switch ($format) {
                     case 'clover':
@@ -106,7 +116,6 @@ class CodeCoverageExtension implements Extension
     public function loadListener(ServiceContainer $container)
     {
         $container->define('event_dispatcher.listeners.code_coverage', function ($container) {
-
             $skipCoverage = false;
 
             $listener = new CodeCoverageListener(
@@ -115,7 +124,7 @@ class CodeCoverageExtension implements Extension
                 $container->get('code_coverage.reports'),
                 $skipCoverage
             );
-            $listener->setOptions($container->getParam('code_coverage', array()));
+            $listener->setOptions($container->getParam('code_coverage', []));
 
             return $listener;
         }, ['event_dispatcher.listeners']);

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the DoyoUserBundle project.
+ * This file is part of the DoyoLabs Behat Common project.
  *
  * (c) Anthonius Munthi <me@itstoni.com>
  *
@@ -13,10 +13,8 @@ declare(strict_types=1);
 
 namespace Doyo\Behat\Contexts;
 
-use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Gherkin\Node\PyStringNode;
 use Behatch\Context\JsonContext as BaseJsonContext;
-use Behatch\HttpCall\HttpCallResultPool;
 use Behatch\Json\Json;
 use Doyo\Behat\ExpressionAwareContextInterface;
 use Doyo\Behat\ExpressionLanguage;
@@ -33,7 +31,6 @@ final class JsonContext extends BaseJsonContext implements ExpressionAwareContex
     {
         $this->expression = $expression;
     }
-
 
     /**
      * @Then /^the JSON should be deep equal to:$/
@@ -67,7 +64,7 @@ final class JsonContext extends BaseJsonContext implements ExpressionAwareContex
         $translated = $this->sortArrays($translated);
         $actual     = $this->sortArrays($this->getJson());
 
-        Assert::assertArraySubset((array)$translated, (array)$actual);
+        Assert::assertArraySubset((array) $translated, (array) $actual);
     }
 
     private function sortArrays($obj)

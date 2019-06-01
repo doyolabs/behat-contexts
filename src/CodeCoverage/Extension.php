@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the DoyoLabs Behat Common project.
+ *
+ * (c) Anthonius Munthi <me@itstoni.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+declare(strict_types=1);
 
 namespace Doyo\Behat\CodeCoverage;
 
@@ -24,7 +34,7 @@ class Extension extends BaseExtension
         $input = $container->get('cli.input');
         if (!$input->hasParameterOption('--coverage')) {
             $container->getParameterBag()->set('behat.code_coverage.skip', true);
-        }else{
+        } else {
             $container->getParameterBag()->set('behat.code_coverage.skip', false);
         }
 
@@ -36,16 +46,16 @@ class Extension extends BaseExtension
     }
 
     /**
-     * return an array of compiler passes
+     * return an array of compiler passes.
      *
      * @return array
      */
     private function getCompilerPasses()
     {
-        return array(
+        return [
             new DriverPass(),
             new FactoryPass(),
             new FilterPass(),
-        );
+        ];
     }
 }
