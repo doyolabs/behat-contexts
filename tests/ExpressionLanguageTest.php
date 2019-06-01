@@ -17,7 +17,6 @@ use Doyo\Behat\ExpressionLanguage;
 use Doyo\Behat\ExpressionLanguageProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ExpressionLanguageTest extends TestCase
 {
@@ -37,7 +36,7 @@ EOC;
 
         $compiled = $subject->compile($expr);
 
-        $this->assertStringContainsString('"translated"', $compiled);
+        $this->assertContains('"translated"', $compiled);
     }
 
     public function getSubject(

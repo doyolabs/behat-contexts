@@ -34,6 +34,8 @@ class CodeCoverageController implements Controller
      */
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $output->writeln('<info>Running with code coverage</info>');
+        if($input->getOption('coverage')) {
+            $output->writeln('<info>Running with code coverage</info>');
+        }
     }
 }

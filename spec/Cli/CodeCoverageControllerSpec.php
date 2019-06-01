@@ -40,6 +40,10 @@ class CodeCoverageControllerSpec extends ObjectBehavior
         InputInterface $input,
         OutputInterface $output
     ) {
+
+        $input->getOption('coverage')
+            ->shouldBeCalled()
+            ->willReturn(true);
         $output->writeln(Argument::any())->shouldBeCalled();
 
         $this->execute($input, $output);

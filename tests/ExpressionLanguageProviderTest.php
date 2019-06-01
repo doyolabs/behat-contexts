@@ -18,7 +18,6 @@ use Doyo\Behat\ExpressionLanguageProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ExpressionLanguageProviderTest extends TestCase
 {
