@@ -1,5 +1,15 @@
 <?php
 
+/*
+ * This file is part of the DoyoLabs Behat Common project.
+ *
+ * (c) Anthonius Munthi <me@itstoni.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+declare(strict_types=1);
 
 namespace Test\Doyo\Behat\Fixtures;
 
@@ -27,7 +37,6 @@ use Behat\Testwork\Filesystem\ServiceContainer\FilesystemExtension;
 use Behat\Testwork\Ordering\ServiceContainer\OrderingExtension;
 use Behat\Testwork\Output\ServiceContainer\Formatter\FormatterFactory;
 use Behat\Testwork\Output\ServiceContainer\OutputExtension;
-use Behat\Testwork\ServiceContainer\Extension;
 use Behat\Testwork\ServiceContainer\ServiceProcessor;
 use Behat\Testwork\Specification\ServiceContainer\SpecificationExtension;
 use Behat\Testwork\Suite\ServiceContainer\SuiteExtension;
@@ -52,9 +61,9 @@ class ApplicationFactory extends BaseFactory
     {
         $processor = new ServiceProcessor();
 
-        return array(
+        return [
             new ArgumentExtension(),
-            new AutoloaderExtension(array('' => '%paths.base%/features/bootstrap')),
+            new AutoloaderExtension(['' => '%paths.base%/features/bootstrap']),
             new SuiteExtension($processor),
             new OutputExtension('pretty', $this->getDefaultFormatterFactories($processor), $processor),
             new ExceptionExtension($processor),
@@ -74,8 +83,8 @@ class ApplicationFactory extends BaseFactory
             new HookExtension(),
             new TransformationExtension($processor),
             new OrderingExtension($processor),
-            new HelperContainerExtension($processor)
-        );
+            new HelperContainerExtension($processor),
+        ];
     }
 
     /**
@@ -86,7 +95,6 @@ class ApplicationFactory extends BaseFactory
         return 'BEHAT_PARAMS';
     }
 
-
     protected function getConfigPath()
     {
         return __DIR__.'/behat.yaml';
@@ -95,16 +103,14 @@ class ApplicationFactory extends BaseFactory
     /**
      * Returns default formatter factories.
      *
-     * @param ServiceProcessor $processor
-     *
      * @return FormatterFactory[]
      */
     private function getDefaultFormatterFactories(ServiceProcessor $processor)
     {
-        return array(
+        return [
             new PrettyFormatterFactory($processor),
             new ProgressFormatterFactory($processor),
             new JUnitFormatterFactory(),
-        );
+        ];
     }
 }

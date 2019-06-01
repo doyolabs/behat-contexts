@@ -1,7 +1,18 @@
 <?php
 
-use Robo\Tasks;
+/*
+ * This file is part of the DoyoLabs Behat Common project.
+ *
+ * (c) Anthonius Munthi <me@itstoni.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+declare(strict_types=1);
+
 use Lurker\Event\FilesystemEvent;
+use Robo\Tasks;
 
 /**
  * This is project's console commands configuration for Robo task runner.
@@ -18,18 +29,18 @@ class RoboFile extends Tasks
             'src',
             'tests',
             'spec',
-            'features'
+            'features',
         ];
 
         $this->taskWatch()
             ->monitor(
                 $paths,
-                function(FilesystemEvent $event) use($options){
-                    $resource = (string)$event->getResource();
-                    if(
-                        false !== strpos($resource,'build')
-                        || false !== strpos($resource,'var')
-                    ){
+                function (FilesystemEvent $event) use ($options) {
+                    $resource = (string) $event->getResource();
+                    if (
+                        false !== strpos($resource, 'build')
+                        || false !== strpos($resource, 'var')
+                    ) {
                         return;
                     }
                     $this->test($options);
@@ -47,7 +58,7 @@ class RoboFile extends Tasks
         $this->doRunBehat();
         $this->doRunPhpUnit();
 
-        if($this->coverage){
+        if ($this->coverage) {
             $this->doMergeCoverage();
         }
     }
@@ -74,11 +85,11 @@ class RoboFile extends Tasks
             ->colors();
 
         $this->yell('Running Behat');
-        if($this->coverage){
+        if ($this->coverage) {
             $behat->option('coverage');
             $this->taskExec('phpdbg -qrr '.$behat->getCommand())
                 ->run();
-        }else{
+        } else {
             $behat->run();
         }
     }
@@ -88,15 +99,14 @@ class RoboFile extends Tasks
         $spec = $this->taskPhpspec();
         $spec->noCodeGeneration()
             ->noInteraction()
-            ->format('dot')
-        ;
+            ->format('dot');
 
         $this->yell('Running PhpSpec');
-        if($this->coverage){
+        if ($this->coverage) {
             $spec->option('coverage');
             $this->taskExec('phpdbg -qrr '.$spec->getCommand())
                 ->run();
-        }else{
+        } else {
             $spec->run();
         }
     }
@@ -105,12 +115,12 @@ class RoboFile extends Tasks
     {
         $phpunit = $this->taskPhpUnit();
 
-        if($this->coverage){
-            $phpunit->option('coverage-php','build/cov/phpunit.cov');
+        if ($this->coverage) {
+            $phpunit->option('coverage-php', 'build/cov/phpunit.cov');
             $this
                 ->taskExec('phpdbg -qrr '.$phpunit->getCommand())
                 ->run();
-        }else{
+        } else {
             $phpunit->run();
         }
     }

@@ -1,10 +1,20 @@
 <?php
 
+/*
+ * This file is part of the DoyoLabs Behat Common project.
+ *
+ * (c) Anthonius Munthi <me@itstoni.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+declare(strict_types=1);
+
 namespace Test\Doyo\Behat;
 
 use Doyo\Behat\ExpressionLanguage;
 use Doyo\Behat\ExpressionLanguageProvider;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\Routing\RouterInterface;
@@ -18,7 +28,7 @@ class ExpressionLanguageProviderTest extends TestCase
 
         $trans->expects($this->exactly(2))
             ->method('trans')
-            ->with('foo',["some" => "params"], 'validators')
+            ->with('foo', ['some' => 'params'], 'validators')
             ->willReturn('translated-foo');
 
         $expr = new Expression('trans("foo",{"some":"params"},"validators")');
@@ -37,7 +47,7 @@ class ExpressionLanguageProviderTest extends TestCase
 
         $router->expects($this->exactly(2))
             ->method('generate')
-            ->with('route',['some' => 'params'],1)
+            ->with('route', ['some' => 'params'], 1)
             ->willReturn('generated-route');
 
         $expr = new Expression('route("route", {"some":"params"},1)');
@@ -51,24 +61,27 @@ class ExpressionLanguageProviderTest extends TestCase
     }
 
     /**
+     * @param mixed|null $translator
+     * @param mixed|null $router
+     *
      * @return ExpressionLanguage
      */
     private function getExpression(
         $translator = null,
         $router = null
-    )
-    {
+    ) {
         $provider = new ExpressionLanguageProvider();
 
-        if(!is_null($translator)){
+        if (null !== $translator) {
             $provider->setTranslator($translator);
         }
-        if(!is_null($router)){
+        if (null !== $router) {
             $provider->setRouter($router);
         }
 
         $expression = new ExpressionLanguage();
         $expression->registerProvider($provider);
+
         return $expression;
     }
 }
