@@ -16,14 +16,14 @@ namespace Doyo\Behat\Contexts;
 use Behat\Gherkin\Node\PyStringNode;
 use Behatch\Context\JsonContext as BaseJsonContext;
 use Behatch\Json\Json;
-use Doyo\Behat\ExpressionAwareContextInterface;
-use Doyo\Behat\ExpressionLanguage;
+use Doyo\Behat\Expression\ExpressionAwareContextInterface;
+use Doyo\Behat\Expression\ExpressionLanguage;
 use PHPUnit\Framework\Assert;
 
 final class JsonContext extends BaseJsonContext implements ExpressionAwareContextInterface
 {
     /**
-     * @var ExpressionLanguage
+     * @var \Doyo\Behat\Expression\ExpressionLanguage
      */
     private $expression;
 

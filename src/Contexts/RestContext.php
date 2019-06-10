@@ -15,13 +15,13 @@ namespace Doyo\Behat\Contexts;
 
 use Behat\Gherkin\Node\PyStringNode;
 use Behatch\Context\RestContext as BaseRestContext;
-use Doyo\Behat\ExpressionAwareContextInterface;
-use Doyo\Behat\ExpressionLanguage;
+use Doyo\Behat\Expression\ExpressionAwareContextInterface;
+use Doyo\Behat\Expression\ExpressionLanguage;
 
 class RestContext extends BaseRestContext implements ExpressionAwareContextInterface
 {
     /**
-     * @var ExpressionLanguage
+     * @var \Doyo\Behat\Expression\ExpressionLanguage
      */
     private $expression;
 

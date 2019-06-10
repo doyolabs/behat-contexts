@@ -15,13 +15,13 @@ namespace Doyo\Behat\Initializer;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Context\Initializer\ContextInitializer;
-use Doyo\Behat\ExpressionAwareContextInterface;
-use Doyo\Behat\ExpressionLanguage;
+use Doyo\Behat\Expression\ExpressionAwareContextInterface;
+use Doyo\Behat\Expression\ExpressionLanguage;
 
 class ExpressionAwareInitializer implements ContextInitializer
 {
     /**
-     * @var ExpressionLanguage
+     * @var \Doyo\Behat\Expression\ExpressionLanguage
      */
     private $expression;
 

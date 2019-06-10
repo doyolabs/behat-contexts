@@ -13,10 +13,11 @@ declare(strict_types=1);
 
 namespace Test\Doyo\Behat;
 
-use Doyo\Behat\ExpressionLanguage;
-use Doyo\Behat\ExpressionLanguageProvider;
+use Doyo\Behat\Expression\ExpressionLanguage;
+use Doyo\Behat\Expression\ExpressionLanguageProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Routing\RouterInterface;
+use Doyo\Behat\Bridge\Symfony\Translation\TranslatorInterface;
 
 class ExpressionLanguageTest extends TestCase
 {
@@ -43,7 +44,7 @@ EOC;
         TranslatorInterface $translator = null,
         RouterInterface $router = null
     ) {
-        $provider = new ExpressionLanguageProvider();
+        $provider = new \Doyo\Behat\Expression\ExpressionLanguageProvider();
         if (null !== $translator) {
             $provider->setTranslator($translator);
         }

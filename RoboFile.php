@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the DoyoLabs Behat Common project.
+ * This file is part of the doyo/behat-coverage-extension project.
  *
  * (c) Anthonius Munthi <me@itstoni.com>
  *
@@ -10,6 +10,15 @@
  */
 
 declare(strict_types=1);
+
+/*
+ * This file is part of the doyo/behat-code-coverage project.
+ *
+ * (c) Anthonius Munthi <me@itstoni.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 use Lurker\Event\FilesystemEvent;
 use Robo\Tasks;
@@ -25,7 +34,10 @@ class RoboFile extends Tasks
 
     private $watch = false;
 
-    public function watch($options = ['coverage'=>false])
+    /**
+     * @param array $options
+     */
+    public function watch($options = ['coverage' => false])
     {
         $this->watch = true;
 
@@ -35,6 +47,7 @@ class RoboFile extends Tasks
             'spec',
             'features',
         ];
+
         $this->taskWatch()
             ->monitor(
                 $paths,
@@ -44,105 +57,124 @@ class RoboFile extends Tasks
                         false !== strpos($resource, 'build')
                         || false !== strpos($resource, 'var')
                     ) {
-                        return 0;
+                        return;
                     }
-                    return $this->test($options);
+                    $this->test($options);
                 },
                 FilesystemEvent::ALL
             )
             ->run();
-
-        return $this->watch;
     }
 
-    public function test($options=['coverage' => false])
+    public function test()
     {
-        $this->stopOnFail(false);
+        $this->taskExec('clear')->run();
 
-        $this->coverage = $options['coverage'];
-
-        if($this->watch){
-            $this->taskExec('clear')->run();
+        if ($this->coverage) {
+            $this->taskFilesystemStack()
+                ->mkdir(__DIR__.'/build', 0775)
+                ->mkdir(__DIR__.'/build/cov', 0775)
+                ->run();
         }
 
-        $phpspec = $this->configurePhpSpec();
-        $behat = $this->configureBehat();
-        $phpunit = $this->configurePhpUnit();
+        /** @var \Robo\Result[] $results */
+        $results   = [];
+        $results[] = $this->configurePhpSpec()->run();
+        $results[] = $this->configurePhpUnit()->run();
 
-        $tasks = [$phpspec, $phpunit, $behat];
-        $failed = false;
-        $errorTask = null;
-        $messages = [];
+        if (!$this->watch) {
+            $results[] = $this->configureBehat()->run();
+        }
 
-        /* @var \Robo\Task\BaseTask $task */
-        foreach($tasks as $task){
-            /* @var \Robo\Result $test */
-            $test = $task->run();
-            if($test->getExitCode() !== 0){
-                $failed = true;
-                $errorTask = $task;
+        $hasError = false;
+        foreach ($results as $result) {
+            if (0 !== $result->getExitCode()) {
+                $hasError = true;
             }
         }
 
-        $builder = $this->collectionBuilder();
         if ($this->coverage) {
-            $this->doMergeCoverage($builder);
-            $builder->run();
+            $this->mergeCoverage();
         }
 
-        if(!$failed){
-            $this->yell('Tests runs successfully');
-            return;
+        if (!$this->watch) {
+            if ($hasError) {
+                throw new \Robo\Exception\TaskException($this, 'Tests failed');
+            }
         }
-
-        return \Robo\Result::error($errorTask,'Tests Failed');
     }
 
-    private function doMergeCoverage(\Robo\Collection\CollectionBuilder $builder)
+    public function coverage()
     {
-        $builder->taskExec('phpdbg -qrr ./vendor/bin/phpcov merge --ansi --clover build/logs/clover.xml build/cov');
-        $builder->taskExec('phpdbg -qrr ./vendor/bin/phpcov merge --ansi --html build/html build/cov');
-        $builder->taskExec('phpdbg -qrr ./vendor/bin/phpcov merge --text --ansi build/cov');
+        $this->coverage = true;
+        $this->test();
     }
 
+    public function mergeCoverage()
+    {
+        $this
+            ->taskExec('phpdbg -qrr ./vendor/bin/phpcov')
+            ->arg('merge')
+            ->option('clover', 'build/logs/clover.xml')
+            ->option('html', 'build/html')
+            ->option('text')
+            ->option('ansi')
+            ->arg('build/cov')
+            ->run();
+    }
+
+    /**
+     * @return \Robo\Task\Base\Exec|\Robo\Task\Testing\Behat
+     */
     private function configureBehat()
     {
-        $behat = $this->taskBehat();
-        $behat->noInteraction()
+        $task = $this->taskBehat();
+        $task->noInteraction()
             ->format('progress')
             ->colors();
+
         if ($this->coverage) {
-            $behat->option('coverage');
-            return $this->taskExec('phpdbg -qrr '.$behat->getCommand());
+            $task->option('coverage');
+            $command = $task->getCommand();
+            $task    = $this->taskExec('phpdbg -qrr '.$command);
+        } else {
+            $task->option('tags', '~@remote');
         }
 
-        return $behat;
+        return $task;
     }
 
+    /**
+     * @return \Robo\Task\Base\Exec|\Robo\Task\Testing\Phpspec
+     */
     private function configurePhpSpec()
     {
-        $spec = $this->taskPhpspec();
-        $spec->noCodeGeneration()
+        $task = $this->taskPhpspec();
+        $task->noCodeGeneration()
             ->noInteraction()
             ->format('dot');
+
         if ($this->coverage) {
-            $spec->option('coverage');
-            return $this->taskExec('phpdbg -qrr '.$spec->getCommand());
+            $task->option('coverage');
+            $task = $this->taskExec('phpdbg -qrr '.$task->getCommand());
         }
 
-        return $spec;
+        return $task;
     }
 
+    /**
+     * @return \Robo\Task\Base\Exec|\Robo\Task\Testing\PHPUnit
+     */
     private function configurePhpUnit()
     {
-        $phpunit = $this->taskPhpUnit();
+        $task = $this->taskPhpUnit();
 
         if ($this->coverage) {
-            $phpunit->option('coverage-php', 'build/cov/phpunit.cov');
-            return $this
-                ->taskExec('phpdbg -qrr '.$phpunit->getCommand());
+            $task = $this->taskExec('phpdbg -qrr '.$task->getCommand());
+            $task->option('coverage-php', 'build/cov/01-phpunit.cov')
+                ->option('coverage-html', 'build/phpunit');
         }
 
-        return $phpunit;
+        return $task;
     }
 }

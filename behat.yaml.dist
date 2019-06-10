@@ -11,25 +11,17 @@ default:
         Behat\Symfony2Extension:
             kernel:
                 class: Test\Doyo\Behat\Fixtures\Kernel
+                env: test
                 debug: true
         Behat\MinkExtension:
             sessions:
                 default:
                     symfony2: ~
+        Doyo\Behat\Coverage\Extension:
+            filter:
+                - src
+            report:
+                php: build/cov/behat.cov
+                html: build/behat
         Doyo\Behat\Extension:
             translator: 'translator'
-        Doyo\Behat\CodeCoverage\Extension:
-            drivers:
-                - local
-            filter:
-                whitelist:
-                    include:
-                        directories:
-                            src: ~
-            report:
-                format: php
-                options:
-                    target: '%paths.base%/build/cov/behat.cov'
-                #format: php
-                #options:
-                #    target: '%paths.base%/build/cov/behat.cov'

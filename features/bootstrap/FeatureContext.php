@@ -12,8 +12,8 @@
 declare(strict_types=1);
 
 use Behat\Behat\Context\Context;
-use Doyo\Behat\ExpressionAwareContextInterface;
-use Doyo\Behat\ExpressionLanguage;
+use Doyo\Behat\Expression\ExpressionAwareContextInterface;
+use Doyo\Behat\Expression\ExpressionLanguage;
 use Webmozart\Assert\Assert;
 
 /**
@@ -26,7 +26,7 @@ class FeatureContext implements Context, ExpressionAwareContextInterface
     private $route;
 
     /**
-     * @var ExpressionLanguage
+     * @var \Doyo\Behat\Expression\ExpressionLanguage
      */
     private $expression;
 
