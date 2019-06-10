@@ -38,6 +38,7 @@
         "phpspec/phpspec": "^4.3",
         "phpunit/phpcov": "^4.0",
         "phpunit/phpunit": "^6.0 | 7.0",
+        "symfony/framework-bundle": "^3.4 | 4.3",
         "symfony/routing": "^3.4 | ^4.3",
         "symfony/translation": "^3.4 | ^4.3"
     }
