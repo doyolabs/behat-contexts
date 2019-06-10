@@ -11,7 +11,9 @@
 
 declare(strict_types=1);
 
-namespace Doyo\Behat;
+namespace Doyo\Behat\Expression;
+
+use Doyo\Behat\Expression\ExpressionLanguage;
 
 interface ExpressionAwareContextInterface
 {

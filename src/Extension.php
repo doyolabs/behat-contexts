@@ -16,6 +16,8 @@ namespace Doyo\Behat;
 use Behat\Behat\Context\ServiceContainer\ContextExtension;
 use Behat\Testwork\ServiceContainer\Extension as ExtensionInterface;
 use Behat\Testwork\ServiceContainer\ExtensionManager;
+use Doyo\Behat\Expression\ExpressionLanguage;
+use Doyo\Behat\Expression\ExpressionLanguageProvider;
 use Doyo\Behat\Initializer\ExpressionAwareInitializer;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -26,7 +28,7 @@ class Extension implements ExtensionInterface
 {
     public function getConfigKey()
     {
-        return 'doyo';
+        return 'doyo_contexts';
     }
 
     public function process(ContainerBuilder $container)

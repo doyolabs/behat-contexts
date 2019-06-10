@@ -1,10 +1,9 @@
 homepage:
     path: /
     defaults:
-        _controller: 'test.controller::index'
+        _controller: 'Test\Doyo\Behat\Fixtures\TestController::index'
 
 foo:
     path: /foo
     defaults:
-        _controller: 'test.controller'
-        _action: 'index'
+        _controller: 'Test\Doyo\Behat\Fixtures\TestController::index'

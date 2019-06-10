@@ -5,15 +5,3 @@ default:
                 - Test\Doyo\Behat\Fixtures\FeatureContext
     extensions:
         Doyo\Behat\Extension: ~
-        Doyo\Behat\CodeCoverage\Extension:
-            drivers:
-                - local
-            filter:
-                whitelist:
-                    include:
-                        directories:
-                            src: ~
-            report:
-                format: php
-                options:
-                    target: '%paths.base%/build/coverage.php'

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the DoyoLabs Behat Common project.
+ * This file is part of the doyo/behat-coverage-extension project.
  *
  * (c) Anthonius Munthi <me@itstoni.com>
  *
@@ -10,6 +10,15 @@
  */
 
 declare(strict_types=1);
+
+/*
+ * This file is part of the doyo/behat-code-coverage project.
+ *
+ * (c) Anthonius Munthi <me@itstoni.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 use Lurker\Event\FilesystemEvent;
 use Robo\Tasks;
@@ -23,8 +32,15 @@ class RoboFile extends Tasks
 {
     private $coverage = false;
 
-    public function watch($options = ['coverage'=>false])
+    private $watch = false;
+
+    /**
+     * @param array $options
+     */
+    public function watch($options = ['coverage' => false])
     {
+        $this->watch = true;
+
         $paths = [
             'src',
             'tests',
@@ -50,78 +66,115 @@ class RoboFile extends Tasks
             ->run();
     }
 
-    public function test($options=['coverage' => false])
+    public function test()
     {
-        $this->coverage = $options['coverage'];
         $this->taskExec('clear')->run();
-        $this->doRunPhpSpec();
-        $this->doRunBehat();
-        $this->doRunPhpUnit();
 
         if ($this->coverage) {
-            $this->doMergeCoverage();
+            $this->taskFilesystemStack()
+                ->mkdir(__DIR__.'/build', 0775)
+                ->mkdir(__DIR__.'/build/cov', 0775)
+                ->run();
+        }
+
+        /** @var \Robo\Result[] $results */
+        $results   = [];
+        $results[] = $this->configurePhpSpec()->run();
+        $results[] = $this->configurePhpUnit()->run();
+
+        if (!$this->watch) {
+            $results[] = $this->configureBehat()->run();
+        }
+
+        $hasError = false;
+        foreach ($results as $result) {
+            if (0 !== $result->getExitCode()) {
+                $hasError = true;
+            }
+        }
+
+        if ($this->coverage) {
+            $this->mergeCoverage();
+        }
+
+        if (!$this->watch) {
+            if ($hasError) {
+                throw new \Robo\Exception\TaskException($this, 'Tests failed');
+            }
         }
     }
 
-    private function doMergeCoverage()
+    public function coverage()
     {
-        $this->yell('Merging coverage');
+        $this->coverage = true;
+        $this->test();
+    }
+
+    public function mergeCoverage()
+    {
         $this
-            ->taskExec('phpdbg -qrr ./vendor/bin/phpcov merge --ansi --clover build/clover.xml build/cov')
-            ->run();
-        $this
-            ->taskExec('phpdbg -qrr ./vendor/bin/phpcov merge --ansi --html build/html build/cov')
-            ->run();
-        $this
-            ->taskExec('phpdbg -qrr ./vendor/bin/phpcov merge --text --ansi build/cov')
+            ->taskExec('phpdbg -qrr ./vendor/bin/phpcov')
+            ->arg('merge')
+            ->option('clover', 'build/logs/clover.xml')
+            ->option('html', 'build/html')
+            ->option('text')
+            ->option('ansi')
+            ->arg('build/cov')
             ->run();
     }
 
-    private function doRunBehat()
+    /**
+     * @return \Robo\Task\Base\Exec|\Robo\Task\Testing\Behat
+     */
+    private function configureBehat()
     {
-        $behat = $this->taskBehat();
-        $behat->noInteraction()
+        $task = $this->taskBehat();
+        $task->noInteraction()
             ->format('progress')
             ->colors();
 
-        $this->yell('Running Behat');
         if ($this->coverage) {
-            $behat->option('coverage');
-            $this->taskExec('phpdbg -qrr '.$behat->getCommand())
-                ->run();
+            $task->option('coverage');
+            $command = $task->getCommand();
+            $task    = $this->taskExec('phpdbg -qrr '.$command);
         } else {
-            $behat->run();
+            $task->option('tags', '~@remote');
         }
+
+        return $task;
     }
 
-    private function doRunPhpSpec()
+    /**
+     * @return \Robo\Task\Base\Exec|\Robo\Task\Testing\Phpspec
+     */
+    private function configurePhpSpec()
     {
-        $spec = $this->taskPhpspec();
-        $spec->noCodeGeneration()
+        $task = $this->taskPhpspec();
+        $task->noCodeGeneration()
             ->noInteraction()
             ->format('dot');
 
-        $this->yell('Running PhpSpec');
         if ($this->coverage) {
-            $spec->option('coverage');
-            $this->taskExec('phpdbg -qrr '.$spec->getCommand())
-                ->run();
-        } else {
-            $spec->run();
+            $task->option('coverage');
+            $task = $this->taskExec('phpdbg -qrr '.$task->getCommand());
         }
+
+        return $task;
     }
 
-    private function doRunPhpUnit()
+    /**
+     * @return \Robo\Task\Base\Exec|\Robo\Task\Testing\PHPUnit
+     */
+    private function configurePhpUnit()
     {
-        $phpunit = $this->taskPhpUnit();
+        $task = $this->taskPhpUnit();
 
         if ($this->coverage) {
-            $phpunit->option('coverage-php', 'build/cov/phpunit.cov');
-            $this
-                ->taskExec('phpdbg -qrr '.$phpunit->getCommand())
-                ->run();
-        } else {
-            $phpunit->run();
+            $task = $this->taskExec('phpdbg -qrr '.$task->getCommand());
+            $task->option('coverage-php', 'build/cov/01-phpunit.cov')
+                ->option('coverage-html', 'build/phpunit');
         }
+
+        return $task;
     }
 }

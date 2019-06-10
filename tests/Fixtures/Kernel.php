@@ -45,4 +45,11 @@ class Kernel extends BaseKernel
     {
         $loader->load(__DIR__.'/config/config.yaml');
     }
+
+    public function getCacheDir()
+    {
+        return __DIR__.'/var/cache';
+    }
+
+
 }

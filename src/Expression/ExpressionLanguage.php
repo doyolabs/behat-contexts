@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Doyo\Behat;
+namespace Doyo\Behat\Expression;
 
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage as BaseExpressionLanguage;

@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 $header = <<<'HEADER'
-This file is part of the DoyoLabs Behat Common project.
+This file is part of the doyo/behat-contexts project.
 
 (c) Anthonius Munthi <me@itstoni.com>
 

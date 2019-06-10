@@ -11,25 +11,27 @@
 
 declare(strict_types=1);
 
-namespace Doyo\Behat;
+namespace Doyo\Behat\Expression;
 
+use Doyo\Behat\Bridge\Symfony\Translation\TranslatorInterface;
 use Symfony\Component\ExpressionLanguage\ExpressionFunction;
 use Symfony\Component\ExpressionLanguage\ExpressionFunctionProviderInterface;
+use Symfony\Component\Routing\RouterInterface;
 
 class ExpressionLanguageProvider implements ExpressionFunctionProviderInterface
 {
     /**
-     * @var \Symfony\Component\Translation\TranslatorInterface|null
+     * @var TranslatorInterface
      */
     private $translator;
 
     /**
-     * @var \Symfony\Component\Routing\RouterInterface|null
+     * @var RouterInterface
      */
     private $router;
 
     /**
-     * @param \Symfony\Component\Translation\TranslatorInterface $translator
+     * @param TranslatorInterface $translator
      */
     public function setTranslator($translator)
     {
@@ -37,7 +39,7 @@ class ExpressionLanguageProvider implements ExpressionFunctionProviderInterface
     }
 
     /**
-     * @param \Symfony\Component\Routing\RouterInterface $router
+     * @param RouterInterface $router
      */
     public function setRouter($router)
     {
