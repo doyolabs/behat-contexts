@@ -29,7 +29,7 @@ cache:
   - &run-test |
     robo test
   - &run-test-coverage
-    robo test --coverage
+    robo coverage
     
 jobs:
   include:
@@ -37,7 +37,6 @@ jobs:
     - php: '7.1'
     - php: '7.2'
     - php: '7.3'
-    - php: '7.2'
       env: COVERAGE=yes
       before_cache:
         - *install-php-coveralls
